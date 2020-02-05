@@ -1,0 +1,40 @@
+version: "3.5"
+
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:2.1
+    command:
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --log.level=${LOG_LEVEL}
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - --api
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - web
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      traefik.enable: true
+
+      # redirection HTTP to HTTPS
+      traefik.http.routers.http_catchall.rule: hostregexp(`{host:.+}`)
+      traefik.http.routers.http_catchall.entrypoints: web
+      traefik.http.routers.http_catchall.middlewares: redirect
+
+      # dashboard
+      traefik.http.routers.traefik.rule: host(`${DASHBOARD_PREFIX}${HOST}`)
+      traefik.http.routers.traefik.entrypoints: websecure
+      traefik.http.routers.traefik.service: api@internal
+      traefik.http.routers.traefik.tls: true
+
+      # middlewares
+      traefik.http.middlewares.redirect.redirectscheme.scheme: https
+
+networks:
+  web:
+    external: true
