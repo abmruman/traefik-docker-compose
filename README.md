@@ -4,21 +4,47 @@ Run traefik:2.1 load balancer and reverse proxy server using docker-compose.
 
 ## Instructions
 
-1. Copy `env.example` to `.env`
-2. Change `.env` variable values as needed
-3. To generate a new `username:password`, use `htpasswd -nb user pass`, then copy user to `DASHBOARD_USER` and pass to `DASHBOARD_PASSWORD` in .env file
-4. Change `docker-compose.yml` if necessary
-5. To validate and view the Compose file run `docker-compose config`
-6. Create a network `doccker network create net` as defined `NETWORK` in .env
-7. Start the container using `docker-compose up` or `docker-compose up -d`
-8. Browse to `dashboard.localhost` or the dashboard url you defined (see in .env)
-9. If you are using localhost, allow the self-signed certificate on your browser (Accept/Proceed in advanced option)
-10. Login using `user:pass` (or what you have set in `.env` file)
-11. To stop (`docker-compose stop`) and remove the containers run `docker-compose down`
+- Copy `env.example` to `.env`
+
+- Change `.env` variable values as needed
+
+- To generate a new `username:password`, use `htpasswd -nb user pass`, then copy user to `DASHBOARD_USER` and pass to `DASHBOARD_PASSWORD` in .env file
+
+- Change any config in `docker-compose.yml` if necessary
+
+- To validate and view the Compose file run `docker-compose config`
+
+- Create a network `doccker network create net` as defined `NETWORK` in .env
+
+- Start the container using `docker-compose up` or `docker-compose up -d`
+
+- Browse to `dashboard.localhost` or the dashboard url you defined (see in .env)
+
+- If you are using localhost, allow the self-signed certificate on your browser (Accept/Proceed in advanced option)
+
+- Login using `user:pass` (or what you have set in `.env` file)
+
+- To stop (`docker-compose stop`) and remove the containers run `docker-compose down`
+
+## Run as a systemctl (linux) service (optional)
+
+- Copy or clone this directory as `/srv/traefik` or you can change `WorkingDirectory=/srv/traefik` to your desired directory in `traefik.service` file (user absolute path only, don't use `$PWD` or relative path).
+
+- Link `traefik.service` file to `/etc/systemd/system/traefik.service` using `sudo ln -s /srv/traefik/traefik.service /etc/systemd/system/traefik.service`
+
+- Reload systemctl daemon using `sudo systemctl daemon-reload`
+
+- To start the service use `sudo systemctl start traefik.service` or `sudo service traefik start`
+
+- To see status of the service use `sudo systemctl status traefik.service` or `sudo service traefik status`
+
+- To restart the service use `sudo systemctl restart traefik.service` or `sudo service traefik restart`
+
+- To stop the service use `sudo systemctl stop traefik.service` or `sudo service traefik stop`
 
 ## Træfɪk
 
-![](https://docs.traefik.io/assets/img/traefik.logo.png)
+![Træfɪk](https://docs.traefik.io/assets/img/traefik.logo.png)
 
 [Træfɪk](https://github.com/containous/traefik) is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy.
 Træfik integrates with your existing infrastructure components ([Docker](https://www.docker.com/), [Swarm mode](https://docs.docker.com/engine/swarm/), [Kubernetes](https://kubernetes.io), [Marathon](https://mesosphere.github.io/marathon/), [Consul](https://www.consul.io/), [Etcd](https://coreos.com/etcd/), [Rancher](https://rancher.com), [Amazon ECS](https://aws.amazon.com/ecs), ...) and configures itself automatically and dynamically.
