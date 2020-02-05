@@ -43,6 +43,40 @@ services:
       traefik.http.routers.traefik.tls.certresolver: leresolver
       traefik.http.routers.traefik.middlewares: dashboard
       traefik.http.middlewares.dashboard.basicauth.users: ${DASHBOARD_USER}:${DASHBOARD_PASSWORD} # from .env
+  ## Uncomment these to test
+  # whoami:
+  #   image: containous/whoami:v1.3.0
+  #   command:
+  #     - --port=8082 # Our service listens on 8082
+  #   networks:
+  #     # Has to be in the same network as Traefik
+  #     - net
+  #   labels:
+  #     # another way of adding lebels
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
+  #     - traefik.http.services.whoami.loadbalancer.server.port=8082
+  #     - "traefik.http.routers.whoami.middlewares=authwhoami"
+  #     - "traefik.http.routers.whoami.entrypoints=websecure"
+  #     - "traefik.http.routers.whoami.tls.certresolver=leresolver"
+  #     - "traefik.http.middlewares.authwhoami.basicauth.users=${DASHBOARD_USER}:${DASHBOARD_PASSWORD}" # user/pass
+  # # Use this to test
+  # whoami_too:
+  #   image: containous/whoami:v1.3.0
+  #   command:
+  #     - --port=8082 # Our service listens on 8082
+  #   networks:
+  #     # Has to be in the same network as Traefik
+  #     - net
+  #   labels:
+  #     # another way of adding lebels
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.whoami_too.rule=Host(`whoami_too.docker.localhost`)"
+  #     - traefik.http.services.whoami_too.loadbalancer.server.port=8082
+  #     - "traefik.http.routers.whoami_too.middlewares=authwhoami_too"
+  #     - "traefik.http.routers.whoami_too.entrypoints=websecure"
+  #     - "traefik.http.routers.whoami_too.tls.certresolver=leresolver"
+  #     - "traefik.http.middlewares.authwhoami_too.basicauth.users=${DASHBOARD_USER}:${DASHBOARD_PASSWORD}" # user/pass
 
 networks:
   net:
