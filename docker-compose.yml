@@ -2,39 +2,58 @@ version: "3.5"
 
 services:
   traefik:
+    # Setting container_name disables running multinple instances of this service
     container_name: traefik
     image: traefik:2.1
     command:
-      - --entryPoints.web.address=:80
-      - --entryPoints.websecure.address=:443
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
       - --log.level=${LOG_LEVEL}
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --api
+      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.leresolver.acme.email=${EMAIL}
+      - --certificatesresolvers.leresolver.acme.storage=/acme.json
+      # set this value to `false` for *.localhost
+      - --certificatesresolvers.leresolver.acme.tlschallenge=${TLS_CHALLENGE}
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     networks:
-      - web
+      - net
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${ACME_PATH}:/acme.json"
     labels:
+      # set this lebel to `false` and the rest is history
       traefik.enable: true
+      # middleware redirect
+      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
 
       # redirection HTTP to HTTPS
       traefik.http.routers.http_catchall.rule: hostregexp(`{host:.+}`)
       traefik.http.routers.http_catchall.entrypoints: web
-      traefik.http.routers.http_catchall.middlewares: redirect
+      traefik.http.routers.http_catchall.middlewares: redirect-to-https
 
       # dashboard
-      traefik.http.routers.traefik.rule: host(`${DASHBOARD_PREFIX}${HOST}`)
+      traefik.http.routers.traefik.rule: Host(`${DASHBOARD_PREFIX}${HOST}`)
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.service: api@internal
-      traefik.http.routers.traefik.tls: true
-
-      # middlewares
-      traefik.http.middlewares.redirect.redirectscheme.scheme: https
+      traefik.http.routers.traefik.tls.certresolver: leresolver
+      traefik.http.routers.traefik.middlewares: dashboard
+      traefik.http.middlewares.dashboard.basicauth.users: ${DASHBOARD_USER}:${DASHBOARD_PASSWORD} # from .env
 
 networks:
-  web:
+  net:
     external: true
+    name: ${NETWORK}
+# Dashboard (https://dashboard.localhost)
+# Route
+# Basic auth (login: user | password: pass)
+# Global HTTP to HTTPS redirection (http://dashboard.localhost/)
+# Dashboard [api@internal]
+# Dashboard [api@internal] + Basic auth (login: user | password: pass)
+# Dashboard [api@internal] + TLS (https://dashboard.localhost/)
+
+# touch acme.json; chmod 600 acme.json
