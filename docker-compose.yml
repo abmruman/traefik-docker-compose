@@ -4,7 +4,7 @@ services:
   traefik:
     # Setting container_name disables running multinple instances of this service
     container_name: traefik
-    image: traefik:2.1
+    image: traefik:v2.1
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -12,11 +12,16 @@ services:
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --api
-      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
-      - --certificatesresolvers.leresolver.acme.email=${EMAIL}
-      - --certificatesresolvers.leresolver.acme.storage=/acme.json
-      # set this value to `false` for *.localhost
-      - --certificatesresolvers.leresolver.acme.tlschallenge=${TLS_CHALLENGE}
+      - --certificatesresolvers.le.acme.caserver=${CA_SERVER}
+      - --certificatesresolvers.le.acme.email=${EMAIL}
+      - --certificatesresolvers.le.acme.storage=/acme.json
+      - --certificatesResolvers.le.acme.tlsChallenge=${TLS_CHALLENGE}
+      - --certificatesResolvers.le.acme.dnsChallenge=${DNS_CHALLENGE}
+      - --certificatesResolvers.le.acme.dnsChallenge.provider=${PROVIDER}
+      - --certificatesResolvers.le.acme.dnsChallenge.delayBeforeCheck=2
+      - --certificatesResolvers.le.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53
+    environment:
+      - ${PROVIDER_ENV_FILE}=${PROVIDER_ENV_FILE_VALUE}
     ports:
       - 80:80
       - 443:443
@@ -25,6 +30,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "${ACME_PATH}:/acme.json"
+      - "${PROVIDER_ENV_FILE_VALUE}:/${PROVIDER_ENV_FILE_VALUE}:ro"
     labels:
       # set this lebel to `false` and the rest is history
       traefik.enable: true
@@ -37,10 +43,14 @@ services:
       traefik.http.routers.http_catchall.middlewares: redirect-to-https
 
       # dashboard
-      traefik.http.routers.traefik.rule: Host(`${DASHBOARD_PREFIX}${HOST}`)
+      traefik.http.routers.traefik.rule: Host(`${DASHBOARD_HOST}`)
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.service: api@internal
-      traefik.http.routers.traefik.tls.certresolver: leresolver
+      traefik.http.routers.traefik.tls: true
+      traefik.http.routers.traefik.tls.certresolver: le
+      traefik.http.routers.traefik.tls.domains[0].main: "${HOST}"
+      traefik.http.routers.traefik.tls.domains[0].sans: "*.${HOST}"
+
       traefik.http.routers.traefik.middlewares: dashboard
       traefik.http.middlewares.dashboard.basicauth.users: ${DASHBOARD_USER}:${DASHBOARD_PASSWORD} # from .env
   # # Uncomment these to test
