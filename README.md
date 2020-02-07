@@ -1,34 +1,76 @@
-# traefik-docker-compose
+# Traefik v2.1 (docker-compose)
 
-Run traefik:2.1 load balancer and reverse proxy server using docker-compose.
+Run traefik:2.1 load balancer and reverse proxy server using docker-compose. Get SSL/TLS certificates automatically using traefik dynamic configurations. Automatically obtain wildcard/SANs certificates for your domain using traefik (lego) with DNS TXT record propagation (**branch [`wildcard`](https://github.com/abmruman/traefik-docker-compose/tree/wildcard)**)
 
 ## Instructions
 
-- Copy `env.example` to `.env`
+1. Copy `env.example` to `.env`
 
-- Change `.env` variable values as needed
+2. Change `.env` variable values as needed (keep `LOG_LEVEL=DEBUG`)
 
-- To generate a new `username:password`, use `htpasswd -nb user pass`, then copy user to `DASHBOARD_USER` and pass to `DASHBOARD_PASSWORD` in .env file
+3. To generate a new `username:password`, use `htpasswd -nb user pass`, then copy user to `DASHBOARD_USER` and pass to `DASHBOARD_PASSWORD` in .env file
 
-- Change any config in `docker-compose.yml` if necessary
+4. Change any config in `docker-compose.yml` if necessary
 
-- To validate and view the Compose file run `docker-compose config`
+5. To validate and view the Compose file run `docker-compose config`
 
-- Create a network `doccker network create net` as defined `NETWORK` in .env
+6. Create a network `sudo doccker network create net` as defined `NETWORK` in .env
 
-- Start the container using `docker-compose up` or `docker-compose up -d`
+7. Create `acme.json` file, `sudo touch acme.json && sudo chmod 600 acme.json`
 
-- Browse to `dashboard.localhost` or the dashboard url you defined (see in .env)
+8. Start the container using `docker-compose up` or `docker-compose up -d`
 
-- If you are using localhost, allow the self-signed certificate on your browser (Accept/Proceed in advanced option)
+9. Browse to `dashboard.localhost` or the dashboard url you defined (see in .env)
 
-- Login using `user:pass` (or what you have set in `.env` file)
+10. If you are using localhost, allow the self-signed certificate on your browser (Accept/Proceed in advanced option)
 
-- To stop (`docker-compose stop`) and remove the containers run `docker-compose down`
+11. Login using `user:pass` (or what you have set in `.env` file)
+
+12. To stop (`docker-compose stop`) and remove the containers run `docker-compose down`
+
+## Widcard/SANs certificate
+
+### branch [`wildcard`](https://github.com/abmruman/traefik-docker-compose/tree/wildcard)
+
+**To obtain wildcard/SANs certificate, you must have access to your provider's (i.e. digitalocean) dns records with `READ` & `WRITE` permission.**
+
+**Note: Letsencrypt uses [rate limiting](https://letsencrypt.org/docs/rate-limits/), Certificates per Registered Domain (50 per week), to ensure fair usage. So, the `CA_SERVER` is set to `staging` server (gives you a fake certificate issued by `Fake LE Intermediate X1`) in the `env file` so that you dont burn out your limit testing initially. If you don't care about the limit or 50 per week is a lot for you, change it to actual server and roll with it. Otherwise, Change all the config in `.env` file, test using staging server. Then, change it to actual server (commented `CA_SERVER` in env file) when everything is functional.**
+
+Follow the steps below:
+
+1. Follow the [Instructions](#instructions) mentioned at the top of this README until `step 8` (don't run `docker-compose up` yet)
+
+2. Find your provider here: [https://docs.traefik.io/https/acme/#providers](https://docs.traefik.io/https/acme/#providers)
+
+3. Edit `PROVIDER`, `PROVIDER_ENV_FILE`, `PROVIDER_ENV_FILE_VALUE` in `.env` file
+
+4. Store your provider's API key to the file, on host machine, as defined in `PROVIDER_ENV_FILE_VALUE` (i.e. `./provider.key`)
+
+5. If you are using a firewall on your server, You may need to allow incoming traffic over port `53`
+
+6. Start using `docker-compose up` (avoid running as daemon `docker-compose up -d` so that we can see the logs in stdout)
+
+7. **Note: It might vary how long it will take to validate dns txt info, for example with digitalocean dns provider it doesnt take very long. If you are using `linode` dns provider (tested on `nanode`), go for a coffee, come back after [10-15 mins](https://community.letsencrypt.org/t/no-txt-record-found-using-linode-dns-plugin/76403)**
+
+8. If the dns propagation validation is successful, you will see `"legolog: [INFO] [domain.tld, *.domain.tld] acme: Validations succeeded; requesting certificates"` in the logs (`docker-compose logs traefik`)
+
+9. Now that you have tested your configuration on `letsencrypt` staging server, stop the `traefik` container (`ctrl+c` if you used `docker-compose up`, `docker-compose down` if you used `docker-compose up -d`)
+
+10. Change the `CA_SERVER` environment variable to the main server in env file (uncomment it)
+
+11. Remove & recreate `acme.json`. `sudo rm acme.json && sudo touch acme.json && sudo chmod 600 acme.json`
+
+12. Run `docker-compose up`
+
+13. You will see `"legolog: [INFO] [exp.abmruman.xyz] Server responded with a certificate."` if successful
+
+14. Browse to your dashboard to make sure if the certificates are working (maybe refresh the page few times with `ctrl + shift + r`)
+
+15. You will see that traefik (lego) has got you a fresh wildcard SSL/TLS certificate (with some manual labor :p) auto-magically!
 
 ## Run as a systemctl (linux) service (optional)
 
-- Copy or clone this directory as `/srv/traefik` or you can change `WorkingDirectory=/srv/traefik` to your desired directory in `traefik.service` file (user absolute path only, don't use `$PWD` or relative path).
+- Copy this directory as `/srv/traefik` or you can change `WorkingDirectory=/srv/traefik` to your desired directory in `traefik.service` file (user absolute path only, `don not` use `$PWD` or relative path).
 
 - Link `traefik.service` file to `/etc/systemd/system/traefik.service` using `sudo ln -s /srv/traefik/traefik.service /etc/systemd/system/traefik.service`
 
@@ -63,3 +105,12 @@ see [the list of features](https://github.com/docker/docker.github.io/blob/maste
 Compose is great for development, testing, and staging environments, as well as
 CI workflows. You can learn more about each case in
 [Common Use Cases](https://github.com/docker/docker.github.io/blob/master/compose/index.md#common-use-cases).
+
+## Contribute
+
+Any contribution to this project is warmly welcomed. I did what I could to cover possible edge cases and make it so that you don't have to edit the compose file if you don't want to, but if you find any weakness or mistake, please let me know.
+
+There are over 50 providers for dns-challenge, I only tested 2 of them.
+If you happen to use one of the others, feel free to include them in the environment example file or compose file if needed. I will be happy to accept any PR.
+
+Also, there are other aspects of traefik v2 that I couldn't or didn't include, It would be great if you could help me out :)
