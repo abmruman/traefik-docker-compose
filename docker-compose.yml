@@ -18,7 +18,6 @@ services:
       - --certificatesResolvers.le.acme.tlsChallenge=${TLS_CHALLENGE}
       - --certificatesResolvers.le.acme.dnsChallenge=${DNS_CHALLENGE}
       - --certificatesResolvers.le.acme.dnsChallenge.provider=${PROVIDER}
-      - --certificatesResolvers.le.acme.dnsChallenge.delayBeforeCheck=2
       - --certificatesResolvers.le.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53
     environment:
       - ${PROVIDER_ENV_FILE}=${PROVIDER_ENV_FILE_VALUE}
