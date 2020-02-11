@@ -11,6 +11,8 @@ services:
       - --log.level=${LOG_LEVEL}
       - --providers.docker
       - --providers.docker.exposedbydefault=false
+      - --providers.file.filename=/etc/traefik/certs.toml
+      - --ping
       - --api
       - --certificatesresolvers.le.acme.caserver=${CA_SERVER}
       - --certificatesresolvers.le.acme.email=${EMAIL}
@@ -22,14 +24,16 @@ services:
     environment:
       - ${PROVIDER_ENV_FILE}=${PROVIDER_ENV_FILE_VALUE}
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     networks:
       - net
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${CERT_PATH}:/certs"
       - "${ACME_PATH}:/acme.json"
+      - "${CONFIG_PATH}:/etc/traefik"
       - "${PROVIDER_ENV_FILE_VALUE}:/${PROVIDER_ENV_FILE_VALUE}:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
       # set this lebel to `false` and the rest is history
       traefik.enable: true
@@ -68,7 +72,7 @@ services:
   #     - traefik.http.services.whoami.loadbalancer.server.port=8082
   #     - "traefik.http.routers.whoami.middlewares=authwhoami"
   #     - "traefik.http.routers.whoami.entrypoints=websecure"
-  #     - "traefik.http.routers.whoami.tls.certresolver=leresolver"
+  #     - "traefik.http.routers.whoami.tls.certresolver=le"
   #     - "traefik.http.middlewares.authwhoami.basicauth.users=${DASHBOARD_USER}:${DASHBOARD_PASSWORD}" # user/pass
   # # Use this to test
   # whoami_too:
@@ -86,7 +90,7 @@ services:
   #     - traefik.http.services.whoami_too.loadbalancer.server.port=8082
   #     - "traefik.http.routers.whoami_too.middlewares=authwhoami_too"
   #     - "traefik.http.routers.whoami_too.entrypoints=websecure"
-  #     - "traefik.http.routers.whoami_too.tls.certresolver=leresolver"
+  #     - "traefik.http.routers.whoami_too.tls.certresolver=le"
   #     - "traefik.http.middlewares.authwhoami_too.basicauth.users=${DASHBOARD_USER}:${DASHBOARD_PASSWORD}" # user/pass
 
 networks:
