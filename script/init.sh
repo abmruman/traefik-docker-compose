@@ -15,4 +15,4 @@ chmod 600 provider.key
 printf "Creating network: "
 eval $(egrep '^NETWORK' .env | xargs)
 printf "$NETWORK\n"
-docker network create web | echo
+docker network create $NETWORK | echo

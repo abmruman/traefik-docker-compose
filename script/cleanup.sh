@@ -6,4 +6,4 @@ docker-compose down
 printf "Deleting  network: "
 eval $(egrep '^NETWORK' .env | xargs)
 printf "$NETWORK\n"
-docker network rm web | echo
+docker network rm $NETWORK | echo
