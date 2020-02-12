@@ -21,3 +21,6 @@ before_install:
 
 script:
   - ./script/travis.sh
+
+after_script:
+  - ./script/cleanup.sh
