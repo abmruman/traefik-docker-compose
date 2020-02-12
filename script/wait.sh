@@ -2,7 +2,7 @@
 
 x="$1"
 [[ -z "$x" ]] && x=5
-echo
+
 printf "\n\nWaiting for things to start"
 while [ $x -gt 0 ]
 do
