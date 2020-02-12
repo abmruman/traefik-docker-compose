@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 ./script/init.sh
 ./script/cert.sh

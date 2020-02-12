@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 echo "docker-compose"
 docker-compose config
