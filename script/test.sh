@@ -6,7 +6,7 @@ eval $(egrep '^HOST' .env | xargs)
 eval $(egrep '^DASHBOARD_HOST' .env | xargs)
 
 shopt -s expand_aliases
-alias curlf="curl -kILSs --connect-timeout 5 --max-time 5 --retry 5 --retry-delay 5 --retry-max-time 30"
+alias curlf="curl -kILSs"
 
 echo "Testing container..."
 echo "HOST=${HOST}"

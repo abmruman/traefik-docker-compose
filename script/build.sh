@@ -8,12 +8,12 @@ docker-compose up -d
 docker-compose ps
 
 
-# printf "\n\nWaiting for things to start"
-# x=0
-# while [ $x -le 10 ]
-# do
-#   printf "."
-#   sleep 1
-#   x=$(( $x + 1 ))
-# done
-# echo "."
+printf "\n\nWaiting for things to start"
+x=0
+while [ $x -le 10 ]
+do
+  printf "."
+  sleep 1
+  x=$(( $x + 1 ))
+done
+echo "."
