@@ -1,6 +1,10 @@
 # Traefik v2.1 (docker-compose)
 
-Run traefik:2.1 load balancer and reverse proxy server using docker-compose. Get SSL/TLS certificates automatically using traefik dynamic configurations. Automatically obtain wildcard/SANs certificates for your domain using traefik (lego) with DNS TXT record propagation (**branch [`wildcard`](https://github.com/abmruman/traefik-docker-compose/tree/wildcard)**)
+[![Build Status](https://travis-ci.com/abmruman/traefik-docker-compose.svg?branch=master)](https://travis-ci.com/abmruman/traefik-docker-compose)
+[![GitHub license](https://img.shields.io/github/license/abmruman/traefik-docker-compose)](https://github.com/abmruman/traefik-docker-compose/blob/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/abmruman/traefik-docker-compose)](https://github.com/abmruman/traefik-docker-compose/issues)
+
+Run traefik:2.1 load balancer and reverse proxy server using docker-compose. Get SSL/TLS certificates automatically using traefik dynamic configurations. Automatically obtain wildcard/SANs certificates for your domain using traefik (lego) with DNS TXT record propagation
 
 ## Instructions
 
@@ -29,8 +33,6 @@ Run traefik:2.1 load balancer and reverse proxy server using docker-compose. Get
 12. To stop (`docker-compose stop`) and remove the containers run `docker-compose down`
 
 ## Widcard/SANs certificate
-
-### branch [`wildcard`](https://github.com/abmruman/traefik-docker-compose/tree/wildcard)
 
 **To obtain wildcard/SANs certificate, you must have access to your provider's (i.e. digitalocean) dns records with `READ` & `WRITE` permission.**
 
@@ -62,7 +64,7 @@ Follow the steps below:
 
 12. Run `docker-compose up`
 
-13. You will see `"legolog: [INFO] [exp.abmruman.xyz] Server responded with a certificate."` if successful
+13. You will see `"legolog: [INFO] [domain.tld] Server responded with a certificate."` if successful
 
 14. Browse to your dashboard to make sure if the certificates are working (maybe refresh the page few times with `ctrl + shift + r`)
 
@@ -84,7 +86,7 @@ Follow the steps below:
 
 - To stop the service use `sudo systemctl stop traefik.service` or `sudo service traefik stop`
 
-## Træfɪk
+## What is Træfɪk?
 
 ![Træfɪk](https://docs.traefik.io/assets/img/traefik.logo.png)
 
@@ -92,7 +94,7 @@ Follow the steps below:
 Træfik integrates with your existing infrastructure components ([Docker](https://www.docker.com/), [Swarm mode](https://docs.docker.com/engine/swarm/), [Kubernetes](https://kubernetes.io), [Marathon](https://mesosphere.github.io/marathon/), [Consul](https://www.consul.io/), [Etcd](https://coreos.com/etcd/), [Rancher](https://rancher.com), [Amazon ECS](https://aws.amazon.com/ecs), ...) and configures itself automatically and dynamically.
 Telling Træfik where your orchestrator is could be the _only_ configuration step you need to do.
 
-## Docker Compose
+## What is Docker Compose?
 
 ![Docker Compose](https://raw.githubusercontent.com/docker/compose/master/logo.png "Docker Compose Logo")
 
@@ -111,6 +113,4 @@ CI workflows. You can learn more about each case in
 Any contribution to this project is warmly welcomed. I did what I could to cover possible edge cases and make it so that you don't have to edit the compose file if you don't want to, but if you find any weakness or mistake, please let me know.
 
 There are over 50 providers for dns-challenge, I only tested 2 of them.
-If you happen to use one of the others, feel free to include them in the environment example file or compose file if needed. I will be happy to accept any PR.
-
-Also, there are other aspects of traefik v2 that I couldn't or didn't include, It would be great if you could help me out :)
+If you happen to use one of the others, feel free to include them in the environment example file ([env.example](/env.example)) or [compose file](/docker-compose.yml). I will be happy to recieve any PR :)
