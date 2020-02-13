@@ -1,0 +1,40 @@
+language: ruby
+
+dist: xenial
+
+env:
+  - DOCKER_COMPOSE_VERSION=1.23.1
+  - DOCKER_COMPOSE_VERSION=1.24.1
+  - DOCKER_COMPOSE_VERSION=1.25.4
+
+services:
+  - docker
+
+stages:
+  - test
+
+jobs:
+  include:
+    - name: "Docker latest"
+      env: DOCKER_COMPOSE_VERSION=1.25.4
+      before_install:
+        - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        - sudo apt-get update
+        - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+        - ./scripts/install-docker-compose.sh
+        - docker version
+        - docker-compose version
+        - docker ps -a
+
+before_install:
+  - ./scripts/install-docker-compose.sh
+  - docker version
+  - docker-compose version
+  - docker ps -a
+
+script:
+  - ./scripts/travis.sh
+
+after_script:
+  - ./scripts/cleanup.sh
