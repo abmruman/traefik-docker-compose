@@ -4,7 +4,7 @@ set -e
 
 export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
-source ./script/color.sh
+source ./scripts/color.sh
 
 shopt -s expand_aliases
 alias curl="curl -ILsS -X GET"
@@ -23,7 +23,7 @@ echo "\nDASHBOARD_HOST=${DASHBOARD_HOST}\n"
 echo "\n\n${YELLOW}Rediection test........................${RESET}\n" 
 echo "\n${GREEN}http://${HOST}${RESET}\n" 
 curl http://${HOST} | grep 302 || exit 1
-echo $ "\n{GREEN}http://${HOST}${RESET}\n" 
+echo "\n${GREEN}http://${HOST}${RESET}\n" 
 curl http://${DASHBOARD_HOST} | grep  302 || exit 1
 
 # echo "\n\nAuthentication test....................\n"

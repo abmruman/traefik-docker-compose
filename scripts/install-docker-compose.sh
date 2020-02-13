@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ev
 
 if [ -z "$DOCKER_COMPOSE_VERSION" ]; then
     DOCKER_COMPOSE_VERSION=1.23.1

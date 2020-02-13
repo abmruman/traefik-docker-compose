@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 eval $(egrep '^HOST' .env | xargs)
 eval $(egrep '^CERT_PATH' .env | xargs)
@@ -7,7 +8,7 @@ echo "Domain: ${HOST}"
 echo "Cert Path: ${CERT_PATH}"
 
 echo "Creating Cert"
-./script/requests.sh
+./scripts/requests.sh
 
 openssl genrsa -out $CERT_PATH/cert.key
 openssl req -new -key $CERT_PATH/cert.key -out $CERT_PATH/cert.csr -config $CERT_PATH/csr.conf

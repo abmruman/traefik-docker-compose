@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ev
 
 eval $(egrep '^HOST' .env | xargs)
 
