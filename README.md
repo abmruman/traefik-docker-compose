@@ -4,9 +4,9 @@
 [![GitHub license](https://img.shields.io/github/license/abmruman/traefik-docker-compose)](https://github.com/abmruman/traefik-docker-compose/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/abmruman/traefik-docker-compose)](https://github.com/abmruman/traefik-docker-compose/issues)
 
-Run traefik:2.1 load balancer and reverse proxy server using docker-compose. Get SSL/TLS certificates automatically using traefik dynamic configurations. Automatically obtain wildcard/SANs certificates for your domain using traefik (lego) with DNS TXT record propagation
+Traefik:2.1 load balancer and reverse proxy server using docker-compose. Get SSL/TLS certificates automatically using traefik dynamic configurations. Automatically obtain wildcard/SANs certificates for your domain using traefik (lego) with DNS TXT record propagation
 
-## Instructions
+## Installation
 
 1. Copy `env.example` to `.env`
 
@@ -32,7 +32,35 @@ Run traefik:2.1 load balancer and reverse proxy server using docker-compose. Get
 
 12. To stop (`docker-compose stop`) and remove the containers run `docker-compose down`
 
-## Widcard/SANs certificate
+**Optionally, you can use the bash scripts in [scripts](/scripts) directory**
+
+### Generate the files needed:
+```bash
+cp env.example .env
+
+touch acme.json
+chmod 600 acme.json
+
+touch provider.key
+echo "supersecretkey" | tee provider.key
+chmod 600 provider.key
+```
+*Add provider's API token/key to `provider.key` file if you are using DNS challenge*
+
+### Generate a user:password for dashboard authentication
+```bash
+htpasswd -nb USERNAME PASSWORD
+```
+*After running this, copy the generated `user:pass` to `.env` file*
+
+### Create Network:
+*Edit value of NETWORK in .env file then run*
+```bash
+eval $(egrep '^NETWORK' .env | xargs)
+docker network create $NETWORK | echo
+```
+
+## Widcard/SANs certificate (Letsencrypt)
 
 **To obtain wildcard/SANs certificate, you must have access to your provider's (i.e. digitalocean) dns records with `READ` & `WRITE` permission.**
 
@@ -48,7 +76,7 @@ Follow the steps below:
 
 4. Store your provider's API key to the file, on host machine, as defined in `PROVIDER_ENV_FILE_VALUE` (i.e. `./provider.key`)
 
-5. If you are using a firewall on your server, You may need to allow incoming traffic over port `53`
+5. If you are using a firewall on your server, You may need to allow incoming traffic over port `53` (*Unconfirmed*)
 
 6. Start using `docker-compose up` (avoid running as daemon `docker-compose up -d` so that we can see the logs in stdout)
 
@@ -70,9 +98,10 @@ Follow the steps below:
 
 15. You will see that traefik (lego) has got you a fresh wildcard SSL/TLS certificate (with some manual labor :p) auto-magically!
 
+
 ## Run as a systemctl (linux) service (optional)
 
-- Copy this directory as `/srv/traefik` or you can change `WorkingDirectory=/srv/traefik` to your desired directory in `traefik.service` file (user absolute path only, `don not` use `$PWD` or relative path).
+- Copy/soft-link this directory as `/srv/traefik` or you can change `WorkingDirectory=/srv/traefik` to your desired directory in `traefik.service` file (user absolute path only, `don not` use `$PWD` or relative path in this file).
 
 - Link `traefik.service` file to `/etc/systemd/system/traefik.service` using `sudo ln -s /srv/traefik/traefik.service /etc/systemd/system/traefik.service`
 
@@ -85,6 +114,18 @@ Follow the steps below:
 - To restart the service use `sudo systemctl restart traefik.service` or `sudo service traefik restart`
 
 - To stop the service use `sudo systemctl stop traefik.service` or `sudo service traefik stop`
+
+*After you made sure that your traefik container runs properly, you can run the following to start it as a systemd service*
+
+Inside your `traefik` direcory, run the following:
+
+```bash
+docker-compose down
+sudo ln -s $(pwd) /srv/traefik
+sudo ln -s /srv/traefik/traefik.service /etc/systemd/system/traefik.service
+sudo systemctl daemon-reload
+sudo systemctl start traefik.service
+```
 
 ## What is Træfɪk?
 
