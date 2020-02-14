@@ -4,7 +4,7 @@
 [![GitHub license](https://img.shields.io/github/license/abmruman/traefik-docker-compose)](https://github.com/abmruman/traefik-docker-compose/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/abmruman/traefik-docker-compose)](https://github.com/abmruman/traefik-docker-compose/issues)
 
-Traefik:2.1 load balancer and reverse proxy server using docker-compose. Get SSL/TLS certificates automatically using traefik dynamic configurations. Automatically obtain wildcard/SANs certificates for your domain using traefik (lego) with DNS TXT record propagation
+Traefik:2.1 load balancer and reverse proxy server using docker-compose. Get SSL/TLS certificates automatically using traefik dynamic configurations. Automatically obtain wildcard/SANs certificates for your domain using traefik (lego) with DNS TXT record propagation.
 
 ## Installation
 
@@ -34,7 +34,8 @@ Traefik:2.1 load balancer and reverse proxy server using docker-compose. Get SSL
 
 **Optionally, you can use the bash scripts in [scripts](/scripts) directory**
 
-### Generate the files needed:
+### Generate the files needed
+
 ```bash
 cp env.example .env
 
@@ -45,16 +46,21 @@ touch provider.key
 echo "supersecretkey" | tee provider.key
 chmod 600 provider.key
 ```
-*Add provider's API token/key to `provider.key` file if you are using DNS challenge*
+
+_Add provider's API token/key to `provider.key` file if you are using DNS challenge._
 
 ### Generate a user:password for dashboard authentication
+
 ```bash
 htpasswd -nb USERNAME PASSWORD
 ```
-*After running this, copy the generated `user:pass` to `.env` file*
 
-### Create Network:
-*Edit value of NETWORK in .env file then run*
+_After running this, copy the generated `user:pass` to `.env` file._
+
+### Create Network
+
+_Edit `NETWORK` in `.env` file then run_
+
 ```bash
 eval $(egrep '^NETWORK' .env | xargs)
 docker network create $NETWORK | echo
@@ -76,7 +82,7 @@ Follow the steps below:
 
 4. Store your provider's API key to the file, on host machine, as defined in `PROVIDER_ENV_FILE_VALUE` (i.e. `./provider.key`)
 
-5. If you are using a firewall on your server, You may need to allow incoming traffic over port `53` (*Unconfirmed*)
+5. If you are using a firewall on your server, You may need to allow incoming traffic over port `53` (_Unconfirmed_)
 
 6. Start using `docker-compose up` (avoid running as daemon `docker-compose up -d` so that we can see the logs in stdout)
 
@@ -98,7 +104,6 @@ Follow the steps below:
 
 15. You will see that traefik (lego) has got you a fresh wildcard SSL/TLS certificate (with some manual labor :p) auto-magically!
 
-
 ## Run as a systemctl (linux) service (optional)
 
 - Copy/soft-link this directory as `/srv/traefik` or you can change `WorkingDirectory=/srv/traefik` to your desired directory in `traefik.service` file (user absolute path only, `don not` use `$PWD` or relative path in this file).
@@ -115,7 +120,7 @@ Follow the steps below:
 
 - To stop the service use `sudo systemctl stop traefik.service` or `sudo service traefik stop`
 
-*After you made sure that your traefik container runs properly, you can run the following to start it as a systemd service*
+_After you make sure that your traefik container is running properly, you can run the following to start it as a systemd service._
 
 Inside your `traefik` direcory, run the following:
 
@@ -127,7 +132,7 @@ sudo systemctl daemon-reload
 sudo systemctl start traefik.service
 ```
 
-## What is Træfɪk?
+## What is Træfɪk
 
 ![Træfɪk](https://docs.traefik.io/assets/img/traefik.logo.png)
 
@@ -135,7 +140,7 @@ sudo systemctl start traefik.service
 Træfik integrates with your existing infrastructure components ([Docker](https://www.docker.com/), [Swarm mode](https://docs.docker.com/engine/swarm/), [Kubernetes](https://kubernetes.io), [Marathon](https://mesosphere.github.io/marathon/), [Consul](https://www.consul.io/), [Etcd](https://coreos.com/etcd/), [Rancher](https://rancher.com), [Amazon ECS](https://aws.amazon.com/ecs), ...) and configures itself automatically and dynamically.
 Telling Træfik where your orchestrator is could be the _only_ configuration step you need to do.
 
-## What is Docker Compose?
+## What is Docker Compose
 
 ![Docker Compose](https://raw.githubusercontent.com/docker/compose/master/logo.png "Docker Compose Logo")
 
