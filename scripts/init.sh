@@ -2,7 +2,14 @@
 set -e
 
 echo "Copying env file"
-cp env.example .env
+# Create env from env.example if it doesn't exist
+if [ -f ".env" ]
+then
+  echo -e "env file exists"
+else
+  echo -e "Copying env file"
+  cp env.example .env
+fi
 
 echo "creating acme.json"
 touch acme.json
