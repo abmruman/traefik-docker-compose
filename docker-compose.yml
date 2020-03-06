@@ -69,7 +69,8 @@ services:
   #     # another way of adding lebels
   #     - "traefik.enable=true"
   #     - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
-  #     - traefik.http.services.whoami.loadbalancer.server.port=8082
+  #     - "traefik.http.routers.whoami.service=whoami"
+  #     - "traefik.http.services.whoami.loadbalancer.server.port=8082"
   #     - "traefik.http.routers.whoami.middlewares=authwhoami"
   #     - "traefik.http.routers.whoami.entrypoints=websecure"
   #     - "traefik.http.routers.whoami.tls.certresolver=le"
@@ -87,7 +88,8 @@ services:
   #     # another way of adding lebels
   #     - "traefik.enable=true"
   #     - "traefik.http.routers.whoami_too.rule=Host(`whoami_too.docker.localhost`)"
-  #     - traefik.http.services.whoami_too.loadbalancer.server.port=8082
+  #     - "traefik.http.routers.whoami_too.service=whoami_too"
+  #     - "traefik.http.services.whoami_too.loadbalancer.server.port=8082"
   #     - "traefik.http.routers.whoami_too.middlewares=authwhoami_too"
   #     - "traefik.http.routers.whoami_too.entrypoints=websecure"
   #     - "traefik.http.routers.whoami_too.tls.certresolver=le"
