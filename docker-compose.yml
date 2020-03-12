@@ -5,6 +5,7 @@ services:
     # Setting container_name disables running multinple instances of this service
     container_name: traefik
     image: traefik:v2.1
+    restart: always
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
