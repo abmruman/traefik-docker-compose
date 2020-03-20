@@ -23,7 +23,7 @@ services:
       - --certificatesResolvers.le.acme.dnsChallenge.provider=${PROVIDER}
       - --certificatesResolvers.le.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53
     environment:
-      - ${PROVIDER_ENV_FILE}=${PROVIDER_ENV_FILE_VALUE}
+      - ${PROVIDER_ENV_FILE}=/provider.key
     ports:
       - "80:80"
       - "443:443"
@@ -33,7 +33,7 @@ services:
       - "${CERT_PATH}:/certs"
       - "${ACME_PATH}:/acme.json"
       - "${CONFIG_PATH}:/etc/traefik"
-      - "${PROVIDER_ENV_FILE_VALUE}:/${PROVIDER_ENV_FILE_VALUE}:ro"
+      - "${PROVIDER_ENV_FILE_VALUE}:/provider.key:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
       # set this lebel to `false` and the rest is history
