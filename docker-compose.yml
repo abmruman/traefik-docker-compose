@@ -13,7 +13,6 @@ services:
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --providers.file.filename=/etc/traefik/certs.toml
-      - --ping
       - --api
       - --certificatesresolvers.le.acme.caserver=${CA_SERVER}
       - --certificatesresolvers.le.acme.email=${EMAIL}
