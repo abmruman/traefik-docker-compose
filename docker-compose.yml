@@ -11,6 +11,7 @@ services:
       - --entrypoints.websecure.address=:443
       - --log.level=${LOG_LEVEL}
       - --providers.docker
+      - --providers.docker.network=${NETWORK}
       - --providers.docker.exposedbydefault=false
       - --providers.file.filename=/etc/traefik/certs.toml
       - --api
