@@ -15,6 +15,26 @@ services:
       - --providers.docker.exposedbydefault=false
       - --providers.file.filename=/etc/traefik/certs.toml
       - --api
+
+      # Writing Logs to a file
+      - --log.filePath=/logs/traefik.log
+      # supports common (Common Log Format) or json
+      - --log.format=${LOG_FORMAT:-common}
+      # Configuring a buffer of 100 lines
+      - --accesslog=${ACCESSLOG:-true}
+      - --accesslog.filepath=/logs/access.log
+      - --accesslog.bufferingsize=${ACCESSLOG_BUFFERINGSIZE:-100}
+
+      # access log fields
+      # Limiting the Logs to Specific Fields
+      - --accesslog.fields.defaultmode=${ACCESSLOG_FIELDS_DEFAULTMODE:-keep}
+      - --accesslog.fields.names.ClientUsername=${ACCESSLOG_FIELDS_NAMES_CLIENTUSERNAME:-keep}
+      - --accesslog.fields.headers.defaultmode=${ACCESSLOG_FIELDS_HEADERS_DEFAULTMODE:-keep}
+      - --accesslog.fields.headers.names.User-Agent=${ACCESSLOG_FIELDS_HEADERS_NAMES_USER_AGENT:-keep}
+      - --accesslog.fields.headers.names.Authorization=${ACCESSLOG_FIELDS_HEADERS_NAMES_AUTHORIZATION:-keep}
+      - --accesslog.fields.headers.names.Content-Type=${ACCESSLOG_FIELDS_HEADERS_NAMES_CONTENT_TYPE:-keep}
+
+      # cert resolvers
       - --certificatesresolvers.le.acme.caserver=${CA_SERVER}
       - --certificatesresolvers.le.acme.email=${EMAIL}
       - --certificatesresolvers.le.acme.storage=/acme.json
@@ -33,6 +53,7 @@ services:
       - "${CERT_PATH}:/certs"
       - "${ACME_PATH}:/acme.json"
       - "${CONFIG_PATH}:/etc/traefik"
+      - "${LOG_PATH:-./logs}:/logs"
       - "${PROVIDER_ENV_FILE_VALUE}:/provider.key:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
