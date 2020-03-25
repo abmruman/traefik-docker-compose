@@ -7,7 +7,17 @@ eval $(egrep '^CERT_PATH' .env | xargs)
 echo "Domain: ${HOST}"
 echo "Cert Path: ${CERT_PATH}"
 
-echo "Creating Cert"
+if [ -f certs/cert.crt ] || [ -f certs/cert.key ] || [ -f certs/cert.pem ]; then
+  echo -e "cert already exists in certs directory\nDo you want to overwrite the files? [y]es/[n]o"
+  read -r ANSWER
+  echo
+  if [[ "$ANSWER" =~ ^[Yy](es)?$ ]] ; then
+    echo "Creating Cert"
+  else
+    exit 1
+  fi
+fi
+
 ./scripts/requests.sh
 
 openssl genrsa -out $CERT_PATH/cert.key
